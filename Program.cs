@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using UserManegment;
+using UserManegment.Entities;
+using UserManegment.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +11,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<AppDbContext>();
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options => 
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IUserService,  UserService>();
 
 WebApplication app = builder.Build();
 
@@ -25,5 +28,9 @@ app.UseHttpsRedirection();
 
 app.MapPost("sayHello", (string title ) => "Hello " + title);
 
-
+app.MapPost("user/Create", (IUserService userService, UserEntity dto) =>
+{
+UserEntity result = userService.Create(dto);
+return Results.Ok(result);
+});
 app.Run();
