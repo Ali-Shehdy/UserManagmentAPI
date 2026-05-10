@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserManegment;
+using UserManegment.Dtos;
 using UserManegment.Entities;
 using UserManegment.Services;
 
@@ -28,9 +29,9 @@ app.UseHttpsRedirection();
 
 app.MapPost("sayHello", (string title ) => "Hello " + title);
 
-app.MapPost("user/Create", (IUserService userService, UserEntity dto) =>
+app.MapPost("user/Create", (IUserService userService, UserCreateParams dto) =>
 {
-UserEntity result = userService.Create(dto);
+UserResponse result = userService.Create(dto);
 return Results.Ok(result);
 });
 app.Run();
