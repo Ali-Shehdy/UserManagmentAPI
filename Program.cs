@@ -29,9 +29,9 @@ app.UseHttpsRedirection();
 
 app.MapPost("sayHello", (string title ) => "Hello " + title);
 
-app.MapPost("user/Create", (IUserService userService, UserCreateParams dto) =>
+app.MapPost("user/Create", async (IUserService userService, UserCreateParams dto) =>
 {
-UserResponse result = userService.Create(dto);
+UserResponse result = await userService.Create(dto);
 return Results.Ok(result);
 });
 app.Run();

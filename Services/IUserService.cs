@@ -6,13 +6,13 @@ namespace UserManegment.Services;
 
 public interface IUserService
 {
-    UserResponse Create(UserCreateParams user);
+    Task<UserResponse> Create(UserCreateParams user);
 }
 
 public class UserService(AppDbContext dbContext) : IUserService
 {
    
-    public UserResponse Create(UserCreateParams dto)
+    public async Task<UserResponse> Create(UserCreateParams dto)
     {
         UserEntity user = new()
         {
@@ -23,22 +23,22 @@ public class UserService(AppDbContext dbContext) : IUserService
             BirthDateTime = dto.BirthDateTime,
             IsMarried = dto.IsMarried,
         };
-        EntityEntry<UserEntity> entity = dbContext.Users.Add(user);
-        dbContext.SaveChanges();
+        UserEntity entity = dbContext.Users.Add(user).Entity;
+        await dbContext.SaveChangesAsync();
 
         int? age = null;
-        if (entity.Entity.BirthDateTime != null)
+        if (entity.BirthDateTime != null)
         {
-            age = DateTime.UtcNow.Year - entity.Entity.BirthDateTime.Value.Year; 
+            age = DateTime.UtcNow.Year - entity.BirthDateTime.Value.Year; 
         }
 
         return new UserResponse
         {
-            FullName = entity.Entity.FullName,
-            Email = entity.Entity.Email,
-            PhoneNumber = entity.Entity.PhoneNumber,
-            BirthDateTime = entity.Entity.BirthDateTime,
-            IsMarried = entity.Entity.IsMarried,
+            FullName = entity.FullName,
+            Email = entity.Email,
+            PhoneNumber = entity.PhoneNumber,
+            BirthDateTime = entity.BirthDateTime,
+            IsMarried = entity.IsMarried,
             Age = age
         };
     }  
